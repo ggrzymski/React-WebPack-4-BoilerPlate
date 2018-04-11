@@ -1,9 +1,14 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
-const path = require('path');
+var webpack = require('webpack');
+const path = require("path");
 
 const htmlPlugin = new HtmlWebPackPlugin({
   template: "./client/index.html",
   filename: "./index.html"
+});
+
+const hotModulePlugin = new webpack.HotModuleReplacementPlugin({
+  multiStep: true
 });
 
 module.exports = {
@@ -51,8 +56,21 @@ module.exports = {
       }
     ]
   },
-  plugins: [htmlPlugin],
+
   devServer: {
-    contentBase: path.join(__dirname, 'public')
-  }
+    historyApiFallback: true,
+    hot: true,
+    inline: true,
+    host: "localhost",
+    port: 3000,
+    proxy: {
+      "/api/**": {
+        target: "http://localhost:5000",
+        secure: false
+      }
+    },
+    contentBase: path.join(__dirname, "public")
+  },
+
+  plugins: [htmlPlugin,hotModulePlugin]
 };
